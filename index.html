@@ -1,0 +1,190 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manohar Vadde - Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        .section { scroll-margin-top: 80px; }
+        .card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); }
+        .nav-link { transition: color 0.3s ease; }
+        .nav-link:hover { color: #f9a8d4; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-gradient-to-r from-teal-600 to-blue-600 text-white fixed w-full top-0 z-10 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Manohar Vadde</h1>
+            <div class="space-x-6">
+                <a href="#about" class="nav-link">About</a>
+                <a href="#skills" class="nav-link">Skills</a>
+                <a href="#projects" class="nav-link">Projects</a>
+                <a href="#internships" class="nav-link">Internships</a>
+                <a href="#certifications" class="nav-link">Certifications</a>
+                <a href="#contact" class="nav-link">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- About Section -->
+    <section id="about" class="section min-h-screen flex items-center bg-white">
+        <div class="max-w-7xl mx-auto px-4 py-12">
+            <h2 class="text-4xl font-bold text-teal-600 mb-6">About Me</h2>
+            <div class="card bg-gray-50 rounded-lg p-6 shadow-md">
+                <p class="text-gray-700 leading-relaxed">
+                    I'm a passionate B.Tech Computer Science graduate from Bengaluru, skilled in Java, Spring Boot, MySQL, and web development. My projects, like an Online Food Delivery system and College Event Management platform, showcase my ability to build responsive, user-friendly applications. With hands-on experience from internships at Celonis, Eduskills, and Infosys Spring Board, I specialize in process mining, CRM development, and Agile methodologies. I'm excited to contribute my technical expertise and problem-solving skills to innovative software solutions.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="section min-h-screen flex items-center bg-teal-50">
+        <div class="max-w-7xl mx-auto px-4 py-12">
+            <h2 class="text-4xl font-bold text-teal-600 mb-6">Skills</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="card bg-white rounded-lg p-4 shadow-md">
+                    <h3 class="text-lg font-semibold text-gray-800">Programming</h3>
+                    <p class="text-gray-600">Java, SQL</p>
+                </div>
+                <div class="card bg-white rounded-lg p-4 shadow-md">
+                    <h3 class="text-lg font-semibold text-gray-800">Web Technologies</h3>
+                    <p class="text-gray-600">HTML, CSS, JavaScript</p>
+                </div>
+                <div class="card bg-white rounded-lg p-4 shadow-md">
+                    <h3 class="text-lg font-semibold text-gray-800">Frameworks</h3>
+                    <p class="text-gray-600">Spring Boot, Servlets, JSP</p>
+                </div>
+                <div class="card bg-white rounded-lg p-4 shadow-md">
+                    <h3 class="text-lg font-semibold text-gray-800">Tools</h3>
+                    <p class="text-gray-600">VS Code, Eclipse, MySQL, Git</p>
+                </div>
+                <div class="card bg-white rounded-lg p-4 shadow-md">
+                    <h3 class="text-lg font-semibold text-gray-800">Methodologies</h3>
+                    <p class="text-gray-600">Agile, Waterfall</p>
+                </div>
+                <div class="card bg-white rounded-lg p-4 shadow-md">
+                    <h3 class="text-lg font-semibold text-gray-800">Soft Skills</h3>
+                    <p class="text-gray-600">Communication, Team Collaboration, Problem-Solving</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="section min-h-screen flex items-center bg-white">
+        <div class="max-w-7xl mx-auto px-4 py-12">
+            <h2 class="text-4xl font-bold text-teal-600 mb-6">Projects</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="card bg-gray-50 rounded-lg p-6 shadow-md">
+                    <h3 class="text-xl font-semibold text-gray-800">Online Food Delivery</h3>
+                    <p class="text-gray-600">Built a responsive web app using Java (JSP, Servlets), HTML, CSS, and JavaScript. Features include restaurant browsing, menu viewing, secure authentication, and real-time order tracking. Optimized MySQL database for efficient data management.</p>
+                </div>
+                <div class="card bg-gray-50 rounded-lg p-6 shadow-md">
+                    <h3 class="text-xl font-semibold text-gray-800">Quiz Application</h3>
+                    <p class="text-gray-600">Developed an interactive desktop app using Java Swing and AWT, enabling users to take multiple-choice quizzes with real-time feedback and score tracking. Focused on intuitive design and efficient event handling.</p>
+                </div>
+                <div class="card bg-gray-50 rounded-lg p-6 shadow-md">
+                    <h3 class="text-xl font-semibold text-gray-800">College Event Management System</h3>
+                    <p class="text-gray-600">Designed a web platform using Java, Spring Boot, MySQL, HTML, and CSS to streamline event scheduling. Integrated secure login and responsive design. Published in IJSRST.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Internships Section -->
+    <section id="internships" class="section min-h-screen flex items-center bg-teal-50">
+        <div class="max-w-7xl mx-auto px-4 py-12">
+            <h2 class="text-4xl font-bold text-teal-600 mb-6">Internships</h2>
+            <div class="space-y-6">
+                <div class="card bg-white rounded-lg p-6 shadow-md">
+                    <h3 class="text-xl font-semibold text-gray-800">Process Mining Virtual Internship, Celonis</h3>
+                    <p class="text-gray-600">Analyzed and optimized business workflows using Celonis process mining tools.</p>
+                </div>
+                <div class="card bg-white rounded-lg p-6 shadow-md">
+                    <h3 class="text-xl font-semibold text-gray-800">Salesforce Virtual Internship, Eduskills</h3>
+                    <p class="text-gray-600">Developed custom CRM applications with Salesforce Lightning and Java, integrating RESTful APIs for enhanced workflows.</p>
+                </div>
+                <div class="card bg-white rounded-lg p-6 shadow-md">
+                    <h3 class="text-xl font-semibold text-gray-800">Infosys Spring Board Internship</h3>
+                    <p class="text-gray-600">Contributed to web app development using Java, Spring Boot, and MySQL, focusing on performance and Agile practices.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Certifications Section -->
+    <section id="certifications" class="section min-h-screen flex items-center bg-white">
+        <div class="max-w-7xl mx-auto px-4 py-12">
+            <h2 class="text-4xl font-bold text-teal-600 mb-6">Certifications</h2>
+            <div class="card bg-gray-50 rounded-lg p-6 shadow-md">
+                <ul class="text-gray-600 space-y-2">
+                    <li>Cloud Computing, Talent Next (Wipro Digital Skills Readiness Program)</li>
+                    <li>AWS Cloud Fundamentals, AWS Training Certification</li>
+                    <li>Employability Skills, Wadhwani Foundation (APSSDC)</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="section min-h-screen flex items-center bg-teal-50">
+        <div class="max-w-7xl mx-auto px-4 py-12">
+            <h2 class="text-4xl font-bold text-teal-600 mb-6">Contact</h2>
+            <div class="card bg-white rounded-lg p-6 shadow-md">
+                <p class="text-gray-600">Email: <a href="mailto:vaddemanohar2002@gmail.com" class="text-blue-600 hover:underline">vaddemanohar2002@gmail.com</a></p>
+                <p class="text-gray-600">Phone: +91 8522946024</p>
+                <p class="text-gray-600">LinkedIn: <a href="https://www.linkedin.com/in/manohar-vadde-745738258/" class="text-blue-600 hover:underline">linkedin.com/in/manohar-vadde</a></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-teal-600 to-blue-600 text-white text-center py-4">
+        <p>© 2025 Manohar Vadde. All rights reserved.</p>
+    </footer>
+</body>
+</html>
